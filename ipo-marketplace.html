@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>IPO Marketplace</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:#f4f5f7;color:#1a1a2e;min-height:100vh;}
+#ipo-login{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:1.5rem;background:#f4f5f7;}
+.lcard{background:#fff;border:1px solid #e2e4e9;border-radius:16px;padding:2rem;width:100%;max-width:340px;box-shadow:0 4px 24px rgba(0,0,0,0.07);}
+.llogo{width:46px;height:46px;background:#0B1E3D;border-radius:10px;display:flex;align-items:center;justify-content:center;margin-bottom:1.25rem;}
+.lcard h2{font-size:17px;font-weight:600;color:#0B1E3D;margin-bottom:0.2rem;}
+.lcard p{font-size:12px;color:#6b7280;margin-bottom:1.25rem;}
+.flabel{font-size:10px;color:#374151;display:block;margin-bottom:4px;text-transform:uppercase;letter-spacing:0.4px;font-weight:600;}
+.finput{width:100%;font-size:13px;padding:9px 12px;border-radius:10px;border:1px solid #d1d5db;background:#f9fafb;color:#111827;margin-bottom:10px;outline:none;transition:border-color 0.15s;}
+.finput:focus{border-color:#185FA5;background:#fff;}
+.finput.err{border-color:#E24B4A;}
+.ferr{font-size:12px;color:#A32D2D;background:#FCEBEB;padding:7px 10px;border-radius:8px;margin-bottom:10px;display:none;}
+.ferr.show{display:block;}
+.remrow{display:flex;align-items:center;gap:7px;margin-bottom:1.25rem;}
+.remrow label{font-size:12px;color:#6b7280;}
+.lbtn{width:100%;background:#0B1E3D;color:#fff;border:none;padding:11px;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;transition:opacity 0.15s;}
+.lbtn:hover{opacity:0.88;}
+#ipo-app{display:none;padding:1rem;max-width:1100px;margin:0 auto;}
+.topbar{background:#0B1E3D;color:#fff;padding:0.8rem 1.25rem;display:flex;justify-content:space-between;align-items:center;border-radius:14px;margin-bottom:1.25rem;}
+.tbar-l{display:flex;align-items:center;gap:9px;}
+.tbar-logo{width:30px;height:30px;background:rgba(133,183,235,0.18);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#85B7EB;}
+.tbar-title{font-size:13px;font-weight:600;}
+.tbar-r{display:flex;align-items:center;gap:10px;}
+.uname{font-size:12px;font-weight:600;color:#85B7EB;}
+.logoutbtn{font-size:11px;color:rgba(255,255,255,0.5);background:transparent;border:1px solid rgba(255,255,255,0.2);padding:4px 10px;border-radius:5px;cursor:pointer;}
+.logoutbtn:hover{color:#fff;border-color:rgba(255,255,255,0.5);}
+.tabs-wrap{display:flex;gap:3px;margin-bottom:1.25rem;background:#f0f1f3;padding:3px;border-radius:10px;width:100%;overflow-x:auto;}
+.tab{font-size:11px;padding:6px 12px;border-radius:7px;border:none;background:transparent;color:#6b7280;cursor:pointer;font-weight:500;white-space:nowrap;transition:all 0.15s;position:relative;}
+.tab.active{background:#fff;color:#111827;box-shadow:0 1px 3px rgba(0,0,0,0.08);}
+.tab-badge{position:absolute;top:2px;right:2px;background:#E24B4A;color:#fff;font-size:9px;font-weight:700;width:16px;height:16px;border-radius:50%;display:flex;align-items:center;justify-content:center;}
+.scard{background:#fff;border:1px solid #e2e4e9;border-radius:14px;padding:1.25rem;margin-bottom:1rem;}
+.scard-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;}
+.scard-title{font-size:13px;font-weight:600;color:#111827;}
+.addbtn{background:#0B1E3D;color:#fff;border:none;padding:6px 12px;border-radius:8px;font-size:11px;font-weight:600;cursor:pointer;}
+.danger-btn{background:transparent;color:#A32D2D;border:1px solid #E24B4A;padding:6px 12px;border-radius:8px;font-size:11px;cursor:pointer;}
+.mtable{width:100%;font-size:12px;border-collapse:collapse;}
+.mtable th{text-align:left;color:#6b7280;font-weight:600;padding:5px 8px;border-bottom:1px solid #f0f0f0;font-size:10px;text-transform:uppercase;letter-spacing:0.3px;}
+.mtable td{padding:8px;color:#111827;border-bottom:1px solid #f9f9f9;vertical-align:middle;}
+.mtable tr:last-child td{border-bottom:none;}
+.mtable tr.unread td{background:rgba(24,95,165,0.04);}
+.act-row{display:flex;gap:5px;flex-wrap:wrap;}
+.ebtn{font-size:11px;color:#185FA5;background:#E6F1FB;border:none;padding:3px 8px;border-radius:4px;cursor:pointer;}
+.dbtn{font-size:11px;color:#A32D2D;background:#FCEBEB;border:none;padding:3px 8px;border-radius:4px;cursor:pointer;}
+.togbtn-on{font-size:11px;color:#A32D2D;background:transparent;border:1px solid #E24B4A;padding:3px 8px;border-radius:4px;cursor:pointer;}
+.togbtn-off{font-size:11px;color:#3B6D11;background:transparent;border:1px solid #639922;padding:3px 8px;border-radius:4px;cursor:pointer;}
+.resolve-btn{font-size:11px;color:#3B6D11;background:#EAF3DE;border:none;padding:3px 8px;border-radius:4px;cursor:pointer;}
+.reopen-btn{font-size:11px;color:#854F0B;background:#FAEEDA;border:none;padding:3px 8px;border-radius:4px;cursor:pointer;}
+.pill{font-size:10px;font-weight:600;padding:2px 7px;border-radius:4px;}
+.pill-open{background:#DCFCE7;color:#15803d;}
+.pill-upcoming{background:#FEF3C7;color:#92400e;}
+.pill-sold{background:#F3F4F6;color:#6b7280;}
+.pill-admin{background:#E6F1FB;color:#185FA5;}
+.pill-user{background:#F3F4F6;color:#6b7280;}
+.pill-new{background:#E24B4A;color:#fff;}
+.pill-resolved{background:#EAF3DE;color:#3B6D11;}
+.dot-on{width:7px;height:7px;border-radius:50%;background:#22c55e;display:inline-block;margin-right:4px;}
+.dot-off{width:7px;height:7px;border-radius:50%;background:#9ca3af;display:inline-block;margin-right:4px;}
+.mini-logo{width:28px;height:28px;border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;}
+.settings-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;}
+.set-group{display:flex;flex-direction:column;gap:4px;margin-bottom:10px;}
+.set-group.full{grid-column:1/-1;}
+.set-label{font-size:10px;color:#6b7280;text-transform:uppercase;letter-spacing:0.4px;font-weight:600;}
+.set-input{font-size:13px;padding:9px 12px;border-radius:10px;border:1px solid #d1d5db;background:#f9fafb;color:#111827;width:100%;outline:none;}
+.set-input:focus{border-color:#185FA5;background:#fff;}
+.set-hint{font-size:10px;color:#9ca3af;margin-top:2px;}
+.savebtn{background:#0B1E3D;color:#fff;border:none;padding:9px 20px;border-radius:10px;font-size:12px;font-weight:600;cursor:pointer;}
+.stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:0.75rem;margin-bottom:1.25rem;}
+.stat-card{background:#f9fafb;border-radius:10px;padding:0.85rem 1rem;border:1px solid #f0f0f0;}
+.stat-val{font-size:20px;font-weight:600;color:#111827;}
+.stat-lbl{font-size:11px;color:#6b7280;margin-top:2px;}
+.hero{background:#0B1E3D;color:#fff;padding:2rem 1.75rem 1.75rem;border-radius:14px;margin-bottom:1.25rem;position:relative;overflow:hidden;}
+.hero::before{content:'';position:absolute;top:-40px;right:-40px;width:180px;height:180px;border-radius:50%;background:rgba(55,138,221,0.1);}
+.hero-badge{display:inline-block;background:rgba(55,138,221,0.2);color:#85B7EB;font-size:10px;font-weight:600;padding:3px 10px;border-radius:20px;margin-bottom:0.75rem;border:1px solid rgba(55,138,221,0.35);letter-spacing:0.8px;text-transform:uppercase;}
+.hero h1{font-size:20px;font-weight:700;color:#fff;margin-bottom:0.35rem;}
+.hero p{font-size:12px;color:rgba(255,255,255,0.5);margin-bottom:1.25rem;}
+.hero-stats{display:flex;gap:2rem;flex-wrap:wrap;}
+.hs-num{font-size:18px;font-weight:700;color:#85B7EB;}
+.hs-lbl{font-size:10px;color:rgba(255,255,255,0.4);margin-top:2px;}
+.frow{display:flex;gap:7px;margin-bottom:1.25rem;flex-wrap:wrap;}
+.fbtn{font-size:11px;padding:5px 13px;border-radius:20px;border:1px solid #d1d5db;background:#fff;color:#6b7280;cursor:pointer;}
+.fbtn.active{background:#0B1E3D;color:#fff;border-color:#0B1E3D;}
+.ipo-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1rem;}
+.ipo-card{background:#fff;border:1px solid #e2e4e9;border-radius:14px;padding:1.2rem;transition:box-shadow 0.2s;}
+.ipo-card:hover{box-shadow:0 4px 16px rgba(0,0,0,0.08);}
+.ctop{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:0.85rem;}
+.clogo{width:40px;height:40px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;flex-shrink:0;}
+.cname{font-size:13px;font-weight:600;color:#111827;}
+.csect{font-size:10px;color:#6b7280;margin-top:2px;}
+.cbadge{font-size:10px;font-weight:600;padding:3px 8px;border-radius:5px;white-space:nowrap;}
+.cb-open{background:#DCFCE7;color:#15803d;}
+.cb-upcoming{background:#FEF3C7;color:#92400e;}
+.cb-sold{background:#F3F4F6;color:#6b7280;}
+.cdiv{border:none;border-top:1px solid #f3f4f6;margin:0.65rem 0;}
+.prow2{display:grid;grid-template-columns:1fr 1fr;gap:0.6rem;margin-bottom:0.65rem;}
+.pbox{background:#f9fafb;border-radius:9px;padding:0.5rem 0.65rem;border:1px solid #f0f0f0;}
+.plbl{font-size:9px;color:#9ca3af;text-transform:uppercase;letter-spacing:0.4px;margin-bottom:2px;font-weight:600;}
+.pval{font-size:13px;font-weight:600;color:#111827;}
+.gbox{border-radius:9px;padding:0.55rem 0.7rem;margin-bottom:0.65rem;display:flex;justify-content:space-between;align-items:center;}
+.gbox.pos{background:#f0fdf4;border:1px solid #bbf7d0;}
+.gbox.neg{background:#fff1f2;border:1px solid #fecdd3;}
+.glbl{font-size:10px;font-weight:600;}
+.gbox.pos .glbl{color:#15803d;}.gbox.neg .glbl{color:#be123c;}
+.gsub{font-size:9px;margin-top:1px;}
+.gbox.pos .gsub{color:#4ade80;}.gbox.neg .gsub{color:#fb7185;}
+.gval{font-size:16px;font-weight:700;}
+.gbox.pos .gval{color:#15803d;}.gbox.neg .gval{color:#be123c;}
+.drow{display:flex;align-items:center;gap:7px;background:#f9fafb;border-radius:9px;padding:0.5rem 0.65rem;margin-bottom:0.65rem;border:1px solid #f0f0f0;}
+.dlbl{font-size:9px;color:#9ca3af;text-transform:uppercase;letter-spacing:0.4px;font-weight:600;}
+.dval{font-size:12px;font-weight:600;color:#111827;margin-top:1px;}
+.dcd{margin-left:auto;font-size:10px;font-weight:600;padding:2px 7px;border-radius:5px;white-space:nowrap;}
+.cd-u{background:#FEE2E2;color:#991b1b;}.cd-n{background:#FEF3C7;color:#92400e;}.cd-s{background:#DCFCE7;color:#15803d;}.cd-c{background:#F3F4F6;color:#6b7280;}
+.avail{font-size:11px;color:#6b7280;margin-bottom:0.65rem;}
+.cacts{display:flex;gap:7px;}
+.buybtn{flex:1;background:#0B1E3D;color:#fff;border:none;padding:9px 0;border-radius:9px;font-size:12px;font-weight:600;cursor:pointer;transition:opacity 0.15s;}
+.buybtn:hover{opacity:0.88;}
+.buybtn:disabled{background:#f3f4f6;color:#9ca3af;cursor:not-allowed;}
+.portfolio-hero{background:linear-gradient(135deg,#0B1E3D,#1a3a6b);border-radius:14px;padding:1.5rem;margin-bottom:1.25rem;color:#fff;}
+.portfolio-hero h2{font-size:16px;font-weight:600;margin-bottom:0.25rem;}
+.portfolio-hero p{font-size:12px;color:rgba(255,255,255,0.5);margin-bottom:1.25rem;}
+.port-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(100px,1fr));gap:0.75rem;}
+.port-stat{background:rgba(255,255,255,0.08);border-radius:10px;padding:0.75rem;}
+.port-stat-val{font-size:15px;font-weight:600;color:#85B7EB;}
+.port-stat-val.profit{color:#4ade80;}
+.port-stat-lbl{font-size:10px;color:rgba(255,255,255,0.45);margin-top:2px;}
+.port-card{background:#fff;border:1px solid #e2e4e9;border-radius:14px;padding:1.2rem;margin-bottom:0.85rem;}
+.port-card-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:1rem;}
+.port-logo{width:42px;height:42px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;flex-shrink:0;}
+.port-name{font-size:14px;font-weight:600;color:#111827;}
+.port-sector{font-size:11px;color:#6b7280;margin-top:2px;}
+.port-stats-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:0.6rem;margin-bottom:0.85rem;}
+.port-stat-box{background:#f9fafb;border-radius:9px;padding:0.55rem 0.65rem;border:1px solid #f0f0f0;}
+.port-stat-box-lbl{font-size:9px;color:#9ca3af;text-transform:uppercase;letter-spacing:0.4px;font-weight:600;margin-bottom:3px;}
+.port-stat-box-val{font-size:13px;font-weight:600;color:#111827;}
+.port-profit-box{border-radius:9px;padding:0.65rem 0.85rem;display:flex;justify-content:space-between;align-items:center;margin-bottom:0.75rem;}
+.port-profit-box.pos{background:#f0fdf4;border:1px solid #bbf7d0;}
+.port-profit-box.neg{background:#fff1f2;border:1px solid #fecdd3;}
+.port-profit-label{font-size:11px;font-weight:600;}
+.port-profit-box.pos .port-profit-label{color:#15803d;}
+.port-profit-box.neg .port-profit-label{color:#be123c;}
+.port-profit-sub{font-size:10px;margin-top:2px;}
+.port-profit-box.pos .port-profit-sub{color:#4ade80;}
+.port-profit-box.neg .port-profit-sub{color:#fb7185;}
+.port-profit-val{font-size:18px;font-weight:700;}
+.port-profit-box.pos .port-profit-val{color:#15803d;}
+.port-profit-box.neg .port-profit-val{color:#be123c;}
+.port-close-row{display:flex;align-items:center;gap:8px;background:#f9fafb;border-radius:9px;padding:0.5rem 0.75rem;border:1px solid #f0f0f0;}
+.port-close-label{font-size:9px;color:#9ca3af;text-transform:uppercase;letter-spacing:0.4px;font-weight:600;}
+.port-close-val{font-size:12px;font-weight:600;color:#111827;margin-top:1px;}
+.port-empty{text-align:center;padding:3rem 1rem;}
+.port-empty-icon{font-size:36px;margin-bottom:0.75rem;}
+.port-empty-title{font-size:15px;font-weight:600;color:#111827;margin-bottom:0.35rem;}
+.port-empty-sub{font-size:13px;color:#6b7280;}
+.assign-grid{display:grid;gap:1rem;}
+.assign-user-card{background:#fff;border:1px solid #e2e4e9;border-radius:14px;padding:1.1rem;}
+.assign-user-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:0.85rem;cursor:pointer;}
+.assign-user-name{font-size:13px;font-weight:600;color:#111827;display:flex;align-items:center;gap:8px;}
+.assign-user-avatar{width:32px;height:32px;border-radius:50%;background:#0B1E3D;color:#85B7EB;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;}
+.assign-count{font-size:11px;color:#6b7280;}
+.assign-body{display:none;}
+.assign-body.open{display:block;}
+.assign-ipo-row{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid #f9f9f9;}
+.assign-ipo-row:last-child{border-bottom:none;}
+.assign-ipo-logo{width:28px;height:28px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0;}
+.assign-ipo-name{flex:1;font-size:12px;font-weight:600;color:#111827;}
+.assign-ipo-sector{font-size:10px;color:#6b7280;}
+.assign-lots-input{width:70px;font-size:12px;padding:5px 8px;border-radius:8px;border:1px solid #d1d5db;background:#f9fafb;color:#111827;text-align:center;outline:none;}
+.assign-lots-input:focus{border-color:#185FA5;}
+.assign-save-btn{font-size:11px;background:#0B1E3D;color:#fff;border:none;padding:5px 10px;border-radius:7px;cursor:pointer;white-space:nowrap;font-weight:600;}
+.foverlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.45);z-index:200;align-items:center;justify-content:center;padding:1rem;}
+.foverlay.open{display:flex;}
+.fbox{background:#fff;border-radius:16px;padding:1.5rem;width:100%;max-width:420px;border:1px solid #e2e4e9;max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,0.15);}
+.ftitle{font-size:15px;font-weight:600;margin-bottom:1.25rem;color:#111827;}
+.fgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.fgrp{display:flex;flex-direction:column;gap:4px;margin-bottom:8px;}
+.fgrp.full{grid-column:1/-1;}
+.fgrp label{font-size:10px;color:#6b7280;text-transform:uppercase;letter-spacing:0.4px;font-weight:600;}
+.fgrp input,.fgrp select,.fgrp textarea{font-size:13px;padding:8px 10px;border-radius:9px;border:1px solid #d1d5db;background:#f9fafb;color:#111827;width:100%;outline:none;}
+.fgrp input:focus,.fgrp select:focus,.fgrp textarea:focus{border-color:#185FA5;background:#fff;}
+.fgrp textarea{resize:vertical;min-height:60px;}
+.facts{display:flex;gap:8px;margin-top:1rem;}
+.fcancelbtn{flex:1;padding:9px;border:1px solid #d1d5db;border-radius:9px;background:#f9fafb;color:#6b7280;cursor:pointer;font-size:12px;}
+.fsavebtn{flex:2;padding:9px;border:none;border-radius:9px;background:#0B1E3D;color:#fff;cursor:pointer;font-size:12px;font-weight:600;}
+.ioverlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.45);z-index:300;align-items:center;justify-content:center;padding:1rem;}
+.ioverlay.open{display:flex;}
+.ibox{background:#fff;border-radius:16px;padding:1.5rem;width:100%;max-width:380px;border:1px solid #e2e4e9;box-shadow:0 20px 60px rgba(0,0,0,0.15);}
+.ibox-header{display:flex;align-items:center;gap:10px;margin-bottom:1rem;}
+.ibox-logo{width:40px;height:40px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;flex-shrink:0;}
+.ibox h3{font-size:15px;font-weight:600;}
+.ibox-meta{font-size:11px;color:#6b7280;margin-top:2px;}
+.ibox-divider{border:none;border-top:1px solid #f3f4f6;margin:1rem 0;}
+.igrp{display:flex;flex-direction:column;gap:4px;margin-bottom:10px;}
+.igrp label{font-size:10px;color:#6b7280;text-transform:uppercase;letter-spacing:0.4px;font-weight:600;}
+.igrp input,.igrp select,.igrp textarea{width:100%;font-size:13px;padding:8px 10px;border-radius:9px;border:1px solid #d1d5db;background:#f9fafb;color:#111827;outline:none;}
+.igrp input:focus,.igrp select:focus{border-color:#185FA5;background:#fff;}
+.igrp textarea{resize:vertical;min-height:50px;}
+.iacts{display:flex;gap:8px;margin-top:1rem;}
+.icancelbtn{flex:1;padding:9px;border:1px solid #d1d5db;border-radius:9px;background:#f9fafb;color:#6b7280;cursor:pointer;font-size:12px;}
+.isubmitbtn{flex:2;padding:9px;border:none;border-radius:9px;background:#0B1E3D;color:#fff;cursor:pointer;font-size:13px;font-weight:600;}
+.success-screen{text-align:center;padding:1.5rem 1rem;}
+.success-icon{width:56px;height:56px;background:#f0fdf4;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 1rem;}
+.success-title{font-size:16px;font-weight:600;color:#111827;margin-bottom:0.5rem;}
+.success-sub{font-size:13px;color:#6b7280;margin-bottom:1.25rem;}
+.success-closebtn{background:#0B1E3D;color:#fff;border:none;padding:10px 24px;border-radius:9px;font-size:13px;font-weight:600;cursor:pointer;}
+.detail-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.45);z-index:400;align-items:center;justify-content:center;padding:1rem;}
+.detail-overlay.open{display:flex;}
+.detail-box{background:#fff;border-radius:16px;padding:1.5rem;width:100%;max-width:400px;border:1px solid #e2e4e9;box-shadow:0 20px 60px rgba(0,0,0,0.15);}
+.detail-title{font-size:15px;font-weight:600;margin-bottom:1rem;}
+.detail-row{display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid #f9f9f9;font-size:13px;}
+.detail-row:last-of-type{border-bottom:none;}
+.detail-key{color:#6b7280;font-size:11px;text-transform:uppercase;letter-spacing:0.3px;font-weight:600;}
+.detail-val{color:#111827;font-weight:600;}
+.detail-actions{display:flex;gap:8px;margin-top:1rem;}
+.detail-close{flex:1;padding:9px;border:1px solid #d1d5db;border-radius:9px;background:#f9fafb;color:#6b7280;cursor:pointer;font-size:12px;}
+.inq-filters{display:flex;gap:6px;margin-bottom:1rem;flex-wrap:wrap;}
+.inq-filter{font-size:11px;padding:4px 11px;border-radius:20px;border:1px solid #d1d5db;background:#fff;color:#6b7280;cursor:pointer;}
+.inq-filter.active{background:#0B1E3D;color:#fff;border-color:#0B1E3D;}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#0B1E3D;color:#fff;padding:10px 22px;border-radius:10px;font-size:13px;z-index:9999;opacity:0;transition:opacity 0.3s;pointer-events:none;white-space:nowrap;box-shadow:0 4px 16px rgba(0,0,0,0.2);}
+.toast.show{opacity:1;}
+.empty{text-align:center;padding:2.5rem;color:#6b7280;font-size:13px;}
+@media(max-width:600px){.ipo-grid{grid-template-columns:1fr;}.settings-grid{grid-template-columns:1fr;}.port-stats-grid{grid-template-columns:1fr 1fr;}.tbar-title{font-size:12px;}}
+</style>
+</head>
+<body>
+
+<div id="ipo-login">
+  <div class="lcard">
+    <div class="llogo"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#85B7EB" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div>
+    <h2>IPO Marketplace</h2>
+    <p>Sign in with your credentials</p>
+    <label class="flabel">Username</label>
+    <input class="finput" type="text" id="lU" placeholder="Enter username" autocomplete="off"/>
+    <label class="flabel">Password</label>
+    <input class="finput" type="password" id="lP" placeholder="Enter password"/>
+    <div class="ferr" id="lErr">Incorrect username or password.</div>
+    <div class="remrow"><input type="checkbox" id="lRem"/><label for="lRem">Remember me on this browser</label></div>
+    <button class="lbtn" onclick="doLogin()">Sign In</button>
+  </div>
+</div>
+
+<div id="ipo-app">
+  <div class="topbar">
+    <div class="tbar-l"><div class="tbar-logo">IPO</div><div class="tbar-title">IPO Marketplace</div></div>
+    <div class="tbar-r"><span class="uname" id="appUN">—</span><button class="logoutbtn" onclick="doLogout()">Sign Out</button></div>
+  </div>
+  <div id="adminTabsWrap" style="display:none">
+    <div class="tabs-wrap">
+      <button class="tab active" onclick="switchTab('market',this)">🏪 Marketplace</button>
+      <button class="tab" onclick="switchTab('portfolio',this)">💼 My Portfolio</button>
+      <button class="tab" onclick="switchTab('inquiries',this)" id="inqTab">📩 Inquiries</button>
+      <button class="tab" onclick="switchTab('ipos',this)">📋 Manage IPOs</button>
+      <button class="tab" onclick="switchTab('assign',this)">📦 Assign Portfolio</button>
+      <button class="tab" onclick="switchTab('users',this)">👥 Users</button>
+      <button class="tab" onclick="switchTab('site',this)">⚙️ Settings</button>
+      <button class="tab" onclick="switchTab('dash',this)">📊 Dashboard</button>
+    </div>
+  </div>
+  <div id="userTabsWrap" style="display:none">
+    <div class="tabs-wrap">
+      <button class="tab active" onclick="switchTab('market',this)">🏪 Marketplace</button>
+      <button class="tab" onclick="switchTab('portfolio',this)">💼 My Portfolio</button>
+    </div>
+  </div>
+
+  <div id="tab-market">
+    <div class="hero" id="heroSection">
+      <div class="hero-badge" id="heroBadge">IPO Marketplace</div>
+      <h1 id="heroTitle">Pre-Listed IPO Applications</h1>
+      <p id="heroSubtitle">Standard price ₹45,000 per lot — Best deals on verified allotments</p>
+      <div class="hero-stats">
+        <div><div class="hs-num" id="heroCount">—</div><div class="hs-lbl">IPOs Listed</div></div>
+        <div><div class="hs-num" id="heroStdPrice">₹45,000</div><div class="hs-lbl">Price Per Lot</div></div>
+        <div><div class="hs-num">Verified</div><div class="hs-lbl">Allotments</div></div>
+      </div>
+    </div>
+    <div class="frow">
+      <button class="fbtn active" onclick="setFilter('all',this)">All</button>
+      <button class="fbtn" onclick="setFilter('open',this)">Available</button>
+      <button class="fbtn" onclick="setFilter('upcoming',this)">Upcoming</button>
+      <button class="fbtn" onclick="setFilter('sold',this)">Sold Out</button>
+    </div>
+    <div class="ipo-grid" id="ipoGrid"></div>
+  </div>
+
+  <div id="tab-portfolio" style="display:none"><div id="portfolioContent"></div></div>
+
+  <div id="tab-inquiries" style="display:none">
+    <div class="scard">
+      <div class="scard-hdr"><div class="scard-title">📩 All Inquiries</div><button class="danger-btn" onclick="clearAllInquiries()">Clear All</button></div>
+      <div class="inq-filters">
+        <button class="inq-filter active" onclick="setInqFilter('all',this)">All</button>
+        <button class="inq-filter" onclick="setInqFilter('new',this)">New</button>
+        <button class="inq-filter" onclick="setInqFilter('resolved',this)">Resolved</button>
+      </div>
+      <table class="mtable" id="inqTable"></table>
+    </div>
+  </div>
+
+  <div id="tab-ipos" style="display:none">
+    <div class="scard">
+      <div class="scard-hdr"><div class="scard-title">📋 IPO List</div><button class="addbtn" onclick="openIPOForm(null)">+ Add New IPO</button></div>
+      <table class="mtable" id="ipoMgrTbl"></table>
+    </div>
+  </div>
+
+  <div id="tab-assign" style="display:none">
+    <div class="scard">
+      <div class="scard-hdr"><div class="scard-title">📦 Assign IPOs to Users</div></div>
+      <p style="font-size:12px;color:#6b7280;margin-bottom:1rem">Enter number of lots for each user. Set 0 to remove from portfolio.</p>
+      <div class="assign-grid" id="assignGrid"></div>
+    </div>
+  </div>
+
+  <div id="tab-users" style="display:none">
+    <div class="scard">
+      <div class="scard-hdr"><div class="scard-title">👥 User Management</div><button class="addbtn" onclick="openUserForm(null)">+ Add New User</button></div>
+      <table class="mtable" id="userMgrTbl"></table>
+    </div>
+  </div>
+
+  <div id="tab-site" style="display:none">
+    <div class="scard">
+      <div class="scard-title" style="margin-bottom:1rem">🌐 Website Settings</div>
+      <div class="settings-grid">
+        <div class="set-group"><label class="set-label">Site Title</label><input class="set-input" id="sTitle"/></div>
+        <div class="set-group"><label class="set-label">Hero Badge</label><input class="set-input" id="sBadge"/></div>
+        <div class="set-group full"><label class="set-label">Hero Heading</label><input class="set-input" id="sHeading"/></div>
+        <div class="set-group full"><label class="set-label">Hero Subtitle</label><input class="set-input" id="sSubtitle"/></div>
+        <div class="set-group"><label class="set-label">Standard Price per Lot (₹)</label><input class="set-input" id="sStdPrice" type="number"/><div class="set-hint">Profit = (Selling − Standard) × Lots</div></div>
+        <div class="set-group"><label class="set-label">WhatsApp Number</label><input class="set-input" id="sWA"/><div class="set-hint">With country code, no +</div></div>
+        <div class="set-group full"><label class="set-label">Footer Note</label><input class="set-input" id="sFooter"/></div>
+      </div>
+      <button class="savebtn" onclick="saveSettings()">Save Settings</button>
+    </div>
+    <div class="scard">
+      <div class="scard-title" style="margin-bottom:1rem">🎨 Hero Color</div>
+      <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+        <input type="color" id="sBgColor" value="#0B1E3D" style="width:48px;height:36px;border:1px solid #d1d5db;border-radius:8px;cursor:pointer;padding:2px"/>
+        <span style="font-size:12px;color:#6b7280">Hero background color</span>
+        <button class="savebtn" onclick="saveSettings()">Apply</button>
+      </div>
+    </div>
+    <div class="scard" style="border-color:#fecdd3">
+      <div class="scard-title" style="margin-bottom:1rem;color:#be123c">⚠️ Danger Zone</div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        <button style="font-size:12px;padding:7px 14px;border:1px solid #E24B4A;border-radius:8px;background:transparent;color:#A32D2D;cursor:pointer" onclick="resetAllData()">Reset All IPO Data</button>
+        <button style="font-size:12px;padding:7px 14px;border:1px solid #E24B4A;border-radius:8px;background:transparent;color:#A32D2D;cursor:pointer" onclick="resetSettings()">Reset Settings</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="tab-dash" style="display:none">
+    <div class="stat-grid" id="dashStats"></div>
+    <div class="scard"><div class="scard-title" style="margin-bottom:1rem">📈 IPO Summary</div><table class="mtable" id="dashTable"></table></div>
+  </div>
+</div>
+
+<div class="foverlay" id="ipoFormOverlay">
+  <div class="fbox">
+    <div class="ftitle" id="ipoFormTitle">Add New IPO</div>
+    <div class="fgrid">
+      <div class="fgrp"><label>IPO Name *</label><input id="fN" placeholder="e.g. Tata Motors"/></div>
+      <div class="fgrp"><label>Sector *</label><input id="fSec" placeholder="e.g. Auto"/></div>
+      <div class="fgrp"><label>Selling Price per Lot (₹) *</label><input id="fPr" type="number" placeholder="55000"/></div>
+      <div class="fgrp"><label>Status *</label><select id="fSt"><option value="open">Available</option><option value="upcoming">Upcoming</option><option value="sold">Sold Out</option></select></div>
+      <div class="fgrp"><label>Total Lots</label><input id="fL" type="number" placeholder="50"/></div>
+      <div class="fgrp"><label>Sold Lots</label><input id="fSo" type="number" placeholder="0"/></div>
+      <div class="fgrp"><label>Close Date *</label><input id="fDt" type="date"/></div>
+      <div class="fgrp"><label>Logo (2 letters) *</label><input id="fLg" maxlength="2" placeholder="TM" style="text-transform:uppercase"/></div>
+      <div class="fgrp full"><label>Logo Color</label><div style="display:flex;align-items:center;gap:8px"><input type="color" id="fCl" value="#185FA5" style="width:40px;height:32px;border:1px solid #d1d5db;border-radius:7px;cursor:pointer;padding:2px"/><span style="font-size:11px;color:#6b7280">Logo background color</span></div></div>
+      <div class="fgrp full"><label>Note (optional)</label><textarea id="fNt" placeholder="Any additional info..."></textarea></div>
+    </div>
+    <div class="facts"><button class="fcancelbtn" onclick="closeIPOForm()">Cancel</button><button class="fsavebtn" onclick="saveIPO()">Save</button></div>
+  </div>
+</div>
+
+<div class="foverlay" id="userFormOverlay">
+  <div class="fbox">
+    <div class="ftitle" id="userFormTitle">Add New User</div>
+    <div class="fgrid">
+      <div class="fgrp"><label>Full Name *</label><input id="uFN" placeholder="e.g. John Smith"/></div>
+      <div class="fgrp"><label>Username *</label><input id="uUN" placeholder="e.g. john" style="text-transform:lowercase"/></div>
+      <div class="fgrp"><label>Password *</label><input id="uPW" type="password" placeholder="Min 6 characters"/></div>
+      <div class="fgrp"><label>Role *</label><select id="uRole"><option value="user">User (view only)</option><option value="admin">Admin (full access)</option></select></div>
+      <div class="fgrp full"><label>Status</label><select id="uActive"><option value="true">Active</option><option value="false">Revoked</option></select></div>
+    </div>
+    <div class="facts"><button class="fcancelbtn" onclick="closeUserForm()">Cancel</button><button class="fsavebtn" onclick="saveUser()">Save</button></div>
+  </div>
+</div>
+
+<div class="ioverlay" id="inqOverlay">
+  <div class="ibox" id="inqFormBox">
+    <div class="ibox-header"><div class="ibox-logo" id="inqLogo">—</div><div><h3 id="inqTitle">IPO Inquiry</h3><div class="ibox-meta" id="inqMeta"></div></div></div>
+    <hr class="ibox-divider">
+    <div class="igrp"><label>Your Full Name *</label><input type="text" id="inqName" placeholder="Enter your name"/></div>
+    <div class="igrp"><label>Mobile Number *</label><input type="tel" id="inqPhone" placeholder="Enter your phone number"/></div>
+    <div class="igrp"><label>How Many Lots?</label><select id="inqLots"><option value="">Select lots</option><option>1 Lot</option><option>2 Lots</option><option>3 Lots</option><option>5 Lots</option><option>10+ Lots</option></select></div>
+    <div class="igrp"><label>Message (optional)</label><textarea id="inqMsg" placeholder="Any specific requirement..."></textarea></div>
+    <div class="iacts"><button class="icancelbtn" onclick="closeInq()">Cancel</button><button class="isubmitbtn" onclick="submitInq()">Send Inquiry</button></div>
+  </div>
+  <div class="ibox" id="inqSuccessBox" style="display:none">
+    <div class="success-screen">
+      <div class="success-icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#15803d" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+      <div class="success-title">Inquiry Submitted!</div>
+      <div class="success-sub">Your inquiry has been received. Our team will get back to you shortly.</div>
+      <button class="success-closebtn" onclick="closeInq()">Close</button>
+    </div>
+  </div>
+</div>
+
+<div class="detail-overlay" id="detailOverlay">
+  <div class="detail-box">
+    <div class="detail-title" id="detailTitle">Inquiry Details</div>
+    <div id="detailContent"></div>
+    <div class="detail-actions"><button class="detail-close" onclick="closeDetail()">Close</button></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const K={sess:'ipo_s8',data:'ipo_d8',users:'ipo_u8',settings:'ipo_cfg8',inq:'ipo_inq8',port:'ipo_port8'};
+const DEFAULT_IPOS=[{id:1,name:'Stallion India',sector:'Lubricants',sellingPrice:52000,status:'open',lots:120,sold:89,closeDate:'2026-04-30',logo:'SI',color:'#0B1E3D',tc:'#85B7EB',note:''},{id:2,name:'Quadrant Future Tek',sector:'Railways/Tech',sellingPrice:68000,status:'open',lots:60,sold:44,closeDate:'2026-04-29',logo:'QF',color:'#185FA5',tc:'#fff',note:''},{id:3,name:'Capital Small Fin.',sector:'Banking',sellingPrice:49000,status:'open',lots:40,sold:31,closeDate:'2026-05-02',logo:'CS',color:'#3B6D11',tc:'#fff',note:''},{id:4,name:'Hexaware Tech',sector:'IT Services',sellingPrice:75000,status:'upcoming',lots:80,sold:0,closeDate:'2026-05-09',logo:'HX',color:'#533AB7',tc:'#fff',note:''},{id:5,name:'HDB Financial',sector:'NBFC',sellingPrice:61000,status:'open',lots:30,sold:8,closeDate:'2026-05-05',logo:'HF',color:'#0F6E56',tc:'#fff',note:''},{id:6,name:'Tata Capital',sector:'Finance',sellingPrice:82000,status:'sold',lots:25,sold:25,closeDate:'2026-04-20',logo:'TC',color:'#444441',tc:'#fff',note:''}];
+const DEFAULT_USERS=[{id:1,username:'admin',password:'Admin@123',name:'Admin',role:'admin',active:true},{id:2,username:'rahul',password:'Rahul@456',name:'Rahul Shah',role:'user',active:true},{id:3,username:'priya',password:'Priya@789',name:'Priya Patel',role:'user',active:true},{id:4,username:'vikram',password:'Vikram@321',name:'Vikram Joshi',role:'user',active:true},{id:5,username:'neha',password:'Neha@654',name:'Neha Mehta',role:'user',active:false}];
+const DEFAULT_SETTINGS={siteTitle:'IPO Marketplace',heroBadge:'IPO Marketplace',heroTitle:'Pre-Listed IPO Applications',heroSubtitle:'Standard price ₹45,000 per lot — Best deals on verified allotments',stdPrice:45000,waNumber:'919876543210',footer:'Contact us for any queries',bgColor:'#0B1E3D'};
+let curUser=null,curFilter='all',selIPO=null,editIPOId=null,editUserId=null,curInqFilter='all';
+let ipoData=[],users=[],settings={},inquiries=[],portfolios={};
+function load(){try{ipoData=JSON.parse(localStorage.getItem(K.data)||'null')||JSON.parse(JSON.stringify(DEFAULT_IPOS));}catch(e){ipoData=JSON.parse(JSON.stringify(DEFAULT_IPOS));}try{users=JSON.parse(localStorage.getItem(K.users)||'null')||JSON.parse(JSON.stringify(DEFAULT_USERS));}catch(e){users=JSON.parse(JSON.stringify(DEFAULT_USERS));}try{settings=JSON.parse(localStorage.getItem(K.settings)||'null')||{...DEFAULT_SETTINGS};}catch(e){settings={...DEFAULT_SETTINGS};}try{inquiries=JSON.parse(localStorage.getItem(K.inq)||'[]');}catch(e){inquiries=[];}try{portfolios=JSON.parse(localStorage.getItem(K.port)||'{}');}catch(e){portfolios={};}}
+function saveIPOs(){try{localStorage.setItem(K.data,JSON.stringify(ipoData));}catch(e){}}
+function saveUsers(){try{localStorage.setItem(K.users,JSON.stringify(users));}catch(e){}}
+function saveSettingsStore(){try{localStorage.setItem(K.settings,JSON.stringify(settings));}catch(e){}}
+function saveInquiries(){try{localStorage.setItem(K.inq,JSON.stringify(inquiries));}catch(e){}}
+function savePortfolios(){try{localStorage.setItem(K.port,JSON.stringify(portfolios));}catch(e){}}
+function doLogin(){const u=document.getElementById('lU').value.trim().toLowerCase(),p=document.getElementById('lP').value,rem=document.getElementById('lRem').checked,err=document.getElementById('lErr'),user=users.find(x=>x.username===u&&x.password===p);if(!user){err.textContent='Incorrect username or password.';err.classList.add('show');document.getElementById('lP').classList.add('err');return;}if(!user.active&&user.role!=='admin'){err.textContent='Your access has been revoked.';err.classList.add('show');return;}err.classList.remove('show');document.getElementById('lP').classList.remove('err');curUser=user;if(rem)try{localStorage.setItem(K.sess,JSON.stringify({id:user.id}));}catch(e){}showApp();}
+function doLogout(){curUser=null;try{localStorage.removeItem(K.sess);}catch(e){}document.getElementById('lU').value='';document.getElementById('lP').value='';document.getElementById('lErr').classList.remove('show');document.getElementById('ipo-app').style.display='none';document.getElementById('ipo-login').style.display='flex';}
+function showApp(){document.getElementById('ipo-login').style.display='none';document.getElementById('ipo-app').style.display='block';document.getElementById('appUN').textContent=curUser.name;const isA=curUser.role==='admin';document.getElementById('adminTabsWrap').style.display=isA?'block':'none';document.getElementById('userTabsWrap').style.display=isA?'none':'block';applySettings();updateInqBadge();switchTab('market',document.querySelector('.tab'));}
+function updateInqBadge(){const tab=document.getElementById('inqTab');if(!tab)return;const unread=inquiries.filter(i=>i.status==='new').length;const ex=tab.querySelector('.tab-badge');if(ex)ex.remove();if(unread>0){const b=document.createElement('span');b.className='tab-badge';b.textContent=unread>9?'9+':unread;tab.appendChild(b);}}
+function switchTab(t,btn){document.querySelectorAll('.tab').forEach(b=>b.classList.remove('active'));if(btn)btn.classList.add('active');['market','portfolio','inquiries','ipos','assign','users','site','dash'].forEach(id=>{const el=document.getElementById('tab-'+id);if(el)el.style.display=id===t?'block':'none';});if(t==='market')renderGrid();if(t==='portfolio')renderPortfolio();if(t==='inquiries')renderInquiries();if(t==='ipos')renderIPOMgr();if(t==='assign')renderAssign();if(t==='users')renderUserMgr();if(t==='site')loadSettingsForm();if(t==='dash')renderDash();}
+function getUserPortfolio(uid){return portfolios[uid]||{};}
+function renderPortfolio(){const uid=curUser.id,port=getUserPortfolio(uid),std=settings.stdPrice||45000,entries=Object.entries(port).filter(([id,lots])=>lots>0).map(([id,lots])=>{const ipo=ipoData.find(i=>i.id===parseInt(id));return ipo?{ipo,lots}:null;}).filter(Boolean),el=document.getElementById('portfolioContent');if(!entries.length){el.innerHTML='<div class="scard"><div class="port-empty"><div class="port-empty-icon">💼</div><div class="port-empty-title">No IPOs in your portfolio yet</div><div class="port-empty-sub">Your admin will assign IPO allotments to your portfolio. Check back soon!</div></div></div>';return;}const totalInvested=entries.reduce((s,{lots})=>s+lots*std,0),totalValue=entries.reduce((s,{ipo,lots})=>s+lots*ipo.sellingPrice,0),totalProfit=totalValue-totalInvested,totalLots=entries.reduce((s,{lots})=>s+lots,0);let html=`<div class="portfolio-hero"><h2>My Portfolio</h2><p>Welcome, ${curUser.name} — your IPO allotments</p><div class="port-stats"><div class="port-stat"><div class="port-stat-val">${totalLots}</div><div class="port-stat-lbl">Total Lots</div></div><div class="port-stat"><div class="port-stat-val">${fAmt(totalInvested)}</div><div class="port-stat-lbl">Total Invested</div></div><div class="port-stat"><div class="port-stat-val">${fAmt(totalValue)}</div><div class="port-stat-lbl">Current Value</div></div><div class="port-stat"><div class="port-stat-val profit">${totalProfit>=0?'+':''}${fAmt(totalProfit)}</div><div class="port-stat-lbl">Total Profit/Loss</div></div></div></div>`;entries.forEach(({ipo,lots})=>{const invested=lots*std,value=lots*ipo.sellingPrice,profit=value-invested,profitPct=(((ipo.sellingPrice-std)/std)*100).toFixed(1),isP=profit>=0,cd=cdL(ipo);html+=`<div class="port-card"><div class="port-card-top"><div style="display:flex;align-items:center;gap:10px"><div class="port-logo" style="background:${ipo.color};color:${ipo.tc}">${ipo.logo}</div><div><div class="port-name">${ipo.name}</div><div class="port-sector">${ipo.sector}</div></div></div><span class="cbadge ${ipo.status==='open'?'cb-open':ipo.status==='upcoming'?'cb-upcoming':'cb-sold'}">${ipo.status==='open'?'Available':ipo.status==='upcoming'?'Upcoming':'Closed'}</span></div><div class="port-stats-grid"><div class="port-stat-box"><div class="port-stat-box-lbl">Your Lots</div><div class="port-stat-box-val">${lots} Lot${lots>1?'s':''}</div></div><div class="port-stat-box"><div class="port-stat-box-lbl">Amount Invested</div><div class="port-stat-box-val" style="font-size:11px">${fAmt(invested)}</div></div><div class="port-stat-box"><div class="port-stat-box-lbl">Current Value</div><div class="port-stat-box-val" style="font-size:11px">${fAmt(value)}</div></div></div><div class="port-profit-box ${isP?'pos':'neg'}"><div><div class="port-profit-label">${isP?'Total Profit':'Total Loss'} on ${lots} Lot${lots>1?'s':''}</div><div class="port-profit-sub">₹${Math.abs(ipo.sellingPrice-std).toLocaleString('en-IN')} per lot × ${lots} = ${fAmt(Math.abs(profit))}</div></div><div class="port-profit-val">${isP?'+':'−'}${fAmt(Math.abs(profit))} <span style="font-size:12px">(${isP?'+':''}${profitPct}%)</span></div></div><div class="port-close-row"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:#9ca3af;flex-shrink:0"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg><div><div class="port-close-label">Close Date</div><div class="port-close-val">${fDate(ipo.closeDate)}</div></div><span class="dcd ${cd.c}" style="margin-left:auto">${cd.t}</span></div>${ipo.note?`<div style="font-size:11px;color:#6b7280;background:#f9fafb;border-radius:8px;padding:6px 9px;margin-top:0.6rem;border:1px solid #f0f0f0">${ipo.note}</div>`:''}</div>`;});el.innerHTML=html;}
+function renderAssign(){const nonAdmin=users.filter(u=>u.role!=='admin'&&u.active),grid=document.getElementById('assignGrid');if(!nonAdmin.length){grid.innerHTML='<div class="empty">No active users.</div>';return;}grid.innerHTML=nonAdmin.map(user=>{const port=getUserPortfolio(user.id),assignedCount=Object.values(port).filter(v=>v>0).length,initials=user.name.split(' ').map(n=>n[0]).join('').slice(0,2).toUpperCase();return`<div class="assign-user-card"><div class="assign-user-hdr" onclick="toggleAssignBody(${user.id})"><div class="assign-user-name"><div class="assign-user-avatar">${initials}</div>${user.name}<span class="pill pill-user">${user.username}</span></div><span class="assign-count">${assignedCount} IPO${assignedCount!==1?'s':''} assigned ▾</span></div><div class="assign-body" id="assignBody_${user.id}">${ipoData.map(ipo=>`<div class="assign-ipo-row"><div class="assign-ipo-logo" style="background:${ipo.color};color:${ipo.tc}">${ipo.logo}</div><div style="flex:1"><div class="assign-ipo-name">${ipo.name}</div><div class="assign-ipo-sector">${ipo.sector} • ${fAmt(ipo.sellingPrice)}/lot</div></div><input type="number" min="0" class="assign-lots-input" id="aLot_${user.id}_${ipo.id}" value="${port[ipo.id]||0}" placeholder="0"/><button class="assign-save-btn" onclick="saveAssignment(${user.id},${ipo.id})">Save</button></div>`).join('')}<div style="margin-top:0.75rem"><button class="addbtn" onclick="saveAllAssignments(${user.id})" style="width:100%;justify-content:center;display:flex">Save All for ${user.name}</button></div></div></div>`;}).join('');}
+function toggleAssignBody(uid){const body=document.getElementById('assignBody_'+uid);body.classList.toggle('open');}
+function saveAssignment(userId,ipoId){const val=parseInt(document.getElementById(`aLot_${userId}_${ipoId}`).value)||0;if(!portfolios[userId])portfolios[userId]={};if(val===0)delete portfolios[userId][ipoId];else portfolios[userId][ipoId]=val;savePortfolios();const ipo=ipoData.find(i=>i.id===ipoId),user=users.find(u=>u.id===userId);showToast(`${user.name}: ${ipo.name} → ${val} lot${val!==1?'s':''} ${val===0?'removed':'saved'}`);renderAssign();}
+function saveAllAssignments(userId){if(!portfolios[userId])portfolios[userId]={};ipoData.forEach(ipo=>{const val=parseInt(document.getElementById(`aLot_${userId}_${ipo.id}`).value)||0;if(val===0)delete portfolios[userId][ipo.id];else portfolios[userId][ipo.id]=val;});savePortfolios();const user=users.find(u=>u.id===userId);showToast(`${user.name}'s portfolio updated!`);renderAssign();}
+function setInqFilter(f,btn){curInqFilter=f;document.querySelectorAll('.inq-filter').forEach(b=>b.classList.remove('active'));btn.classList.add('active');renderInquiries();}
+function formatTime(ts){const d=new Date(ts),now=new Date(),diff=Math.floor((now-d)/1000);if(diff<60)return'Just now';if(diff<3600)return`${Math.floor(diff/60)}m ago`;if(diff<86400)return`${Math.floor(diff/3600)}h ago`;return d.toLocaleDateString('en-IN',{day:'numeric',month:'short'});}
+function renderInquiries(){const t=document.getElementById('inqTable');let list=curInqFilter==='all'?inquiries:inquiries.filter(i=>i.status===curInqFilter);list=[...list].reverse();if(!list.length){t.innerHTML=`<tr><td colspan="6" class="empty">No inquiries found.</td></tr>`;return;}t.innerHTML=`<tr><th>Time</th><th>Name</th><th>Phone</th><th>IPO</th><th>Status</th><th>Action</th></tr>`+list.map(inq=>`<tr class="${inq.status==='new'?'unread':''}"><td style="font-size:11px;color:#6b7280">${formatTime(inq.timestamp)}</td><td><strong style="font-size:12px">${inq.name}</strong></td><td style="font-size:12px">${inq.phone}</td><td style="font-size:12px">${inq.ipoName}</td><td><span class="pill ${inq.status==='new'?'pill-new':'pill-resolved'}">${inq.status==='new'?'New':'Resolved'}</span></td><td><div class="act-row"><button class="ebtn" onclick="viewInquiry('${inq.id}')">View</button>${inq.status==='new'?`<button class="resolve-btn" onclick="resolveInq('${inq.id}')">Resolve</button>`:`<button class="reopen-btn" onclick="reopenInq('${inq.id}')">Reopen</button>`}<button class="dbtn" onclick="deleteInq('${inq.id}')">Del</button></div></td></tr>`).join('');updateInqBadge();}
+function viewInquiry(id){const inq=inquiries.find(i=>i.id===id);document.getElementById('detailTitle').textContent=`Inquiry — ${inq.name}`;document.getElementById('detailContent').innerHTML=[{k:'Name',v:inq.name},{k:'Phone',v:inq.phone},{k:'IPO',v:inq.ipoName},{k:'Selling Price',v:fAmt(inq.sellingPrice)},{k:'Lots Required',v:inq.lots||'—'},{k:'Message',v:inq.message||'—'},{k:'Submitted',v:new Date(inq.timestamp).toLocaleString('en-IN')},{k:'Status',v:inq.status==='new'?'New':'Resolved'}].map(r=>`<div class="detail-row"><span class="detail-key">${r.k}</span><span class="detail-val">${r.v}</span></div>`).join('');document.getElementById('detailOverlay').classList.add('open');}
+function closeDetail(){document.getElementById('detailOverlay').classList.remove('open');}
+function resolveInq(id){const inq=inquiries.find(i=>i.id===id);inq.status='resolved';saveInquiries();renderInquiries();showToast('Marked as resolved.');}
+function reopenInq(id){const inq=inquiries.find(i=>i.id===id);inq.status='new';saveInquiries();renderInquiries();showToast('Inquiry reopened.');}
+function deleteInq(id){if(!confirm('Delete this inquiry?'))return;inquiries=inquiries.filter(i=>i.id!==id);saveInquiries();renderInquiries();showToast('Deleted.');}
+function clearAllInquiries(){if(!confirm('Clear all inquiries?'))return;inquiries=[];saveInquiries();renderInquiries();showToast('All cleared.');}
+function openInq(id){selIPO=ipoData.find(i=>i.id===id);document.getElementById('inqLogo').textContent=selIPO.logo;document.getElementById('inqLogo').style.background=selIPO.color;document.getElementById('inqLogo').style.color=selIPO.tc;document.getElementById('inqTitle').textContent=selIPO.name;document.getElementById('inqMeta').textContent=`${fAmt(selIPO.sellingPrice)}/lot  •  Gain: +${gPct(selIPO.sellingPrice)}%  •  Closes: ${fDate(selIPO.closeDate)}`;['inqName','inqPhone','inqMsg'].forEach(id=>document.getElementById(id).value='');document.getElementById('inqLots').value='';document.getElementById('inqFormBox').style.display='block';document.getElementById('inqSuccessBox').style.display='none';document.getElementById('inqOverlay').classList.add('open');}
+function closeInq(){document.getElementById('inqOverlay').classList.remove('open');selIPO=null;}
+function submitInq(){const name=document.getElementById('inqName').value.trim(),phone=document.getElementById('inqPhone').value.trim();if(!name||!phone){showToast('Please enter your name and phone number');return;}const lots=document.getElementById('inqLots').value,message=document.getElementById('inqMsg').value.trim();inquiries.push({id:'inq_'+Date.now(),name,phone,lots,message,ipoId:selIPO.id,ipoName:selIPO.name,sellingPrice:selIPO.sellingPrice,gainPct:gPct(selIPO.sellingPrice),sector:selIPO.sector,timestamp:new Date().toISOString(),status:'new'});saveInquiries();updateInqBadge();document.getElementById('inqFormBox').style.display='none';document.getElementById('inqSuccessBox').style.display='block';}
+function renderIPOMgr(){const t=document.getElementById('ipoMgrTbl');if(!ipoData.length){t.innerHTML='<tr><td colspan="5" class="empty">No IPOs.</td></tr>';return;}t.innerHTML=`<tr><th></th><th>Name</th><th>Price/Lot</th><th>Status</th><th>Action</th></tr>`+ipoData.map(i=>`<tr><td><div class="mini-logo" style="background:${i.color};color:${i.tc}">${i.logo}</div></td><td><strong style="font-size:12px">${i.name}</strong><br><span style="font-size:10px;color:#6b7280">${i.sector}</span></td><td style="font-size:12px">${fAmt(i.sellingPrice)}</td><td><span class="pill pill-${i.status}">${i.status==='open'?'Available':i.status==='upcoming'?'Upcoming':'Sold Out'}</span></td><td><div class="act-row"><button class="ebtn" onclick="openIPOForm(${i.id})">Edit</button><button class="dbtn" onclick="deleteIPO(${i.id})">Delete</button></div></td></tr>`).join('');}
+function openIPOForm(id){editIPOId=id;document.getElementById('ipoFormTitle').textContent=id?'Edit IPO':'Add New IPO';if(id){const i=ipoData.find(x=>x.id===id);document.getElementById('fN').value=i.name;document.getElementById('fSec').value=i.sector;document.getElementById('fPr').value=i.sellingPrice;document.getElementById('fSt').value=i.status;document.getElementById('fL').value=i.lots;document.getElementById('fSo').value=i.sold;document.getElementById('fDt').value=i.closeDate;document.getElementById('fLg').value=i.logo;document.getElementById('fCl').value=i.color;document.getElementById('fNt').value=i.note||'';}else{['fN','fSec','fPr','fL','fSo','fDt','fLg','fNt'].forEach(id=>document.getElementById(id).value='');document.getElementById('fSt').value='open';document.getElementById('fCl').value='#185FA5';}document.getElementById('ipoFormOverlay').classList.add('open');}
+function closeIPOForm(){document.getElementById('ipoFormOverlay').classList.remove('open');editIPOId=null;}
+function saveIPO(){const name=document.getElementById('fN').value.trim(),sector=document.getElementById('fSec').value.trim(),price=parseInt(document.getElementById('fPr').value),status=document.getElementById('fSt').value,lots=parseInt(document.getElementById('fL').value)||0,sold=parseInt(document.getElementById('fSo').value)||0,date=document.getElementById('fDt').value,logo=document.getElementById('fLg').value.trim().toUpperCase().slice(0,2),color=document.getElementById('fCl').value,note=document.getElementById('fNt').value.trim();if(!name||!sector||!price||!date||!logo){showToast('Fill all required fields');return;}if(editIPOId){const idx=ipoData.findIndex(i=>i.id===editIPOId);ipoData[idx]={...ipoData[idx],name,sector,sellingPrice:price,status,lots,sold,closeDate:date,logo,color,tc:'#ffffff',note};showToast('IPO updated!');}else{const nid=ipoData.length?Math.max(...ipoData.map(i=>i.id))+1:1;ipoData.push({id:nid,name,sector,sellingPrice:price,status,lots,sold,closeDate:date,logo,color,tc:'#ffffff',note});showToast('New IPO added!');}saveIPOs();closeIPOForm();renderIPOMgr();renderGrid();}
+function deleteIPO(id){const i=ipoData.find(x=>x.id===id);if(!confirm(`Delete "${i.name}"?`))return;ipoData=ipoData.filter(x=>x.id!==id);saveIPOs();renderIPOMgr();renderGrid();showToast('IPO deleted.');}
+function renderUserMgr(){const t=document.getElementById('userMgrTbl'),nonAdmin=users.filter(u=>u.username!=='admin');if(!nonAdmin.length){t.innerHTML='<tr><td colspan="4" class="empty">No users.</td></tr>';return;}t.innerHTML=`<tr><th>Name</th><th>Username/Role</th><th>Status</th><th>Action</th></tr>`+nonAdmin.map(u=>`<tr><td style="font-size:12px">${u.name}</td><td><span style="font-size:12px">${u.username}</span><br><span class="pill pill-${u.role}">${u.role}</span></td><td><span class="${u.active?'dot-on':'dot-off'}"></span>${u.active?'Active':'Revoked'}</td><td><div class="act-row"><button class="ebtn" onclick="openUserForm(${u.id})">Edit</button><button class="${u.active?'togbtn-on':'togbtn-off'}" onclick="toggleUser(${u.id})">${u.active?'Revoke':'Restore'}</button><button class="dbtn" onclick="deleteUser(${u.id})">Delete</button></div></td></tr>`).join('');}
+function openUserForm(id){editUserId=id;document.getElementById('userFormTitle').textContent=id?'Edit User':'Add New User';if(id){const u=users.find(x=>x.id===id);document.getElementById('uFN').value=u.name;document.getElementById('uUN').value=u.username;document.getElementById('uPW').value='';document.getElementById('uRole').value=u.role;document.getElementById('uActive').value=String(u.active);}else{['uFN','uUN','uPW'].forEach(i=>document.getElementById(i).value='');document.getElementById('uRole').value='user';document.getElementById('uActive').value='true';}document.getElementById('userFormOverlay').classList.add('open');}
+function closeUserForm(){document.getElementById('userFormOverlay').classList.remove('open');editUserId=null;}
+function saveUser(){const name=document.getElementById('uFN').value.trim(),username=document.getElementById('uUN').value.trim().toLowerCase(),pw=document.getElementById('uPW').value,role=document.getElementById('uRole').value,active=document.getElementById('uActive').value==='true';if(!name||!username){showToast('Name and username required');return;}if(!editUserId&&!pw){showToast('Password required');return;}if(!editUserId&&users.find(u=>u.username===username)){showToast('Username already exists');return;}if(editUserId){const idx=users.findIndex(u=>u.id===editUserId);users[idx]={...users[idx],name,username,role,active};if(pw)users[idx].password=pw;showToast('User updated!');}else{const nid=users.length?Math.max(...users.map(u=>u.id))+1:1;users.push({id:nid,name,username,password:pw,role,active});showToast('New user added!');}saveUsers();closeUserForm();renderUserMgr();}
+function toggleUser(id){const u=users.find(x=>x.id===id);u.active=!u.active;saveUsers();renderUserMgr();showToast(u.active?`${u.name} restored`:`${u.name} revoked`);}
+function deleteUser(id){const u=users.find(x=>x.id===id);if(!confirm(`Delete "${u.name}"?`))return;users=users.filter(x=>x.id!==id);saveUsers();renderUserMgr();showToast('User deleted.');}
+function applySettings(){document.getElementById('heroTitle').textContent=settings.heroTitle||'Pre-Listed IPO Applications';document.getElementById('heroSubtitle').textContent=settings.heroSubtitle||'';document.getElementById('heroBadge').textContent=settings.heroBadge||'IPO Marketplace';document.getElementById('heroStdPrice').textContent='₹'+Number(settings.stdPrice||45000).toLocaleString('en-IN');document.querySelector('.hero').style.background=settings.bgColor||'#0B1E3D';}
+function loadSettingsForm(){document.getElementById('sTitle').value=settings.siteTitle||'';document.getElementById('sBadge').value=settings.heroBadge||'';document.getElementById('sHeading').value=settings.heroTitle||'';document.getElementById('sSubtitle').value=settings.heroSubtitle||'';document.getElementById('sStdPrice').value=settings.stdPrice||45000;document.getElementById('sWA').value=settings.waNumber||'';document.getElementById('sFooter').value=settings.footer||'';document.getElementById('sBgColor').value=settings.bgColor||'#0B1E3D';}
+function saveSettings(){settings.siteTitle=document.getElementById('sTitle').value.trim()||settings.siteTitle;settings.heroBadge=document.getElementById('sBadge').value.trim()||settings.heroBadge;settings.heroTitle=document.getElementById('sHeading').value.trim()||settings.heroTitle;settings.heroSubtitle=document.getElementById('sSubtitle').value.trim();settings.stdPrice=parseInt(document.getElementById('sStdPrice').value)||45000;settings.waNumber=document.getElementById('sWA').value.trim()||settings.waNumber;settings.footer=document.getElementById('sFooter').value.trim();settings.bgColor=document.getElementById('sBgColor').value;saveSettingsStore();applySettings();showToast('Settings saved!');}
+function resetSettings(){settings={...DEFAULT_SETTINGS};saveSettingsStore();loadSettingsForm();applySettings();showToast('Settings reset.');}
+function resetAllData(){if(!confirm('Reset all IPO data?'))return;ipoData=JSON.parse(JSON.stringify(DEFAULT_IPOS));saveIPOs();showToast('IPO data reset.');}
+function renderDash(){const std=settings.stdPrice||45000;document.getElementById('dashStats').innerHTML=[{v:ipoData.length,l:'Total IPOs'},{v:ipoData.filter(i=>i.status==='open').length,l:'Available'},{v:inquiries.length,l:'Total Inquiries'},{v:inquiries.filter(i=>i.status==='new').length,l:'New Inquiries'},{v:users.filter(u=>u.active).length,l:'Active Users'},{v:Object.keys(portfolios).length,l:'Portfolios'}].map(s=>`<div class="stat-card"><div class="stat-val">${s.v}</div><div class="stat-lbl">${s.l}</div></div>`).join('');document.getElementById('dashTable').innerHTML=`<tr><th>IPO</th><th>Price/Lot</th><th>Gain %</th><th>Inquiries</th><th>Assigned</th><th>Status</th></tr>`+ipoData.map(i=>{const pct=(((i.sellingPrice-std)/std)*100).toFixed(1),inqCnt=inquiries.filter(q=>q.ipoId===i.id).length,assignedCnt=Object.values(portfolios).filter(p=>p[i.id]&&p[i.id]>0).length;return`<tr><td><strong style="font-size:12px">${i.name}</strong></td><td style="font-size:12px">${fAmt(i.sellingPrice)}</td><td style="font-size:12px;color:${pct>=0?'#15803d':'#be123c'};font-weight:600">${pct>=0?'+':''}${pct}%</td><td style="font-size:12px">${inqCnt}</td><td style="font-size:12px">${assignedCnt} user${assignedCnt!==1?'s':''}</td><td><span class="pill pill-${i.status}">${i.status==='open'?'Available':i.status==='upcoming'?'Upcoming':'Sold Out'}</span></td></tr>`;}).join('');}
+function dL(d){return Math.round((new Date(d)-new Date())/(1000*60*60*24));}
+function cdL(ipo){if(ipo.status==='sold')return{t:'Closed',c:'cd-c'};const d=dL(ipo.closeDate);if(d<0)return{t:'Closed',c:'cd-c'};if(d===0)return{t:'Closes today!',c:'cd-u'};if(d<=2)return{t:`${d} days left`,c:'cd-u'};if(d<=5)return{t:`${d} days left`,c:'cd-n'};return{t:`${d} days left`,c:'cd-s'};}
+function fDate(s){return new Date(s).toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'});}
+function fAmt(n){return'₹'+Number(n).toLocaleString('en-IN');}
+function gPct(sp){const std=settings.stdPrice||45000;return(((sp-std)/std)*100).toFixed(1);}
+function gAmt(sp){return sp-(settings.stdPrice||45000);}
+function setFilter(f,btn){curFilter=f;document.querySelectorAll('.fbtn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');renderGrid();}
+function renderGrid(){const grid=document.getElementById('ipoGrid'),filtered=curFilter==='all'?ipoData:ipoData.filter(i=>i.status===curFilter);document.getElementById('heroCount').textContent=ipoData.filter(i=>i.status!=='sold').length;if(!filtered.length){grid.innerHTML='<div class="empty" style="grid-column:1/-1">No IPOs in this category.</div>';return;}const cal=`<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:#9ca3af;flex-shrink:0"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>`;grid.innerHTML=filtered.map(ipo=>{const pct=parseFloat(gPct(ipo.sellingPrice)),amt=gAmt(ipo.sellingPrice),isG=pct>=0,avail=ipo.lots-ipo.sold,canB=ipo.status!=='sold'&&avail>0,sL=ipo.status==='open'?'Available':ipo.status==='upcoming'?'Upcoming':'Sold Out',sC=ipo.status==='open'?'cb-open':ipo.status==='upcoming'?'cb-upcoming':'cb-sold',cd=cdL(ipo);return`<div class="ipo-card"><div class="ctop"><div style="display:flex;align-items:center;gap:9px"><div class="clogo" style="background:${ipo.color};color:${ipo.tc}">${ipo.logo}</div><div><div class="cname">${ipo.name}</div><div class="csect">${ipo.sector}</div></div></div><span class="cbadge ${sC}">${sL}</span></div><hr class="cdiv"><div class="prow2"><div class="pbox"><div class="plbl">Standard Price/Lot</div><div class="pval" style="font-size:11px;color:#6b7280">${fAmt(settings.stdPrice||45000)}</div></div><div class="pbox"><div class="plbl">Selling Price/Lot</div><div class="pval">${fAmt(ipo.sellingPrice)}</div></div></div><div class="gbox ${isG?'pos':'neg'}"><div><div class="glbl">${isG?'Gain per Lot':'Discount per Lot'}</div><div class="gsub">${isG?'+':''}${fAmt(amt)} per lot</div></div><div class="gval">${isG?'+':''}${pct}%</div></div><div class="drow">${cal}<div><div class="dlbl">Close Date</div><div class="dval">${fDate(ipo.closeDate)}</div></div><span class="dcd ${cd.c}">${cd.t}</span></div>${ipo.note?`<div style="font-size:11px;color:#6b7280;background:#f9fafb;border-radius:8px;padding:5px 8px;margin-bottom:0.6rem;border:1px solid #f0f0f0">${ipo.note}</div>`:''}<div class="avail">${ipo.status==='upcoming'?'Coming soon':ipo.status==='sold'?'All lots sold out':`${avail} lots available`}</div><div class="cacts"><button class="buybtn" onclick="openInq(${ipo.id})" ${!canB?'disabled':''}>${ipo.status==='upcoming'?'Pre-Register':canB?'Send Inquiry':'Sold Out'}</button></div></div>`;}).join('');}
+function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3000);}
+document.getElementById('lP').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();});
+document.getElementById('lU').addEventListener('keydown',e=>{if(e.key==='Enter')document.getElementById('lP').focus();});
+load();
+try{const s=localStorage.getItem(K.sess);if(s){const{id}=JSON.parse(s);const u=users.find(x=>x.id===id);if(u&&u.active){curUser=u;showApp();}}}catch(e){}
+</script>
+</body>
+</html>
